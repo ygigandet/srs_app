@@ -44,8 +44,5 @@ with tab1:
         result_user = con.execute(query).df()
         st.dataframe(result_user)
 
-    if option_languages == "SQL":
-
-
 with tab2:
     st.write("Empty for now")
