@@ -34,8 +34,18 @@ with st.sidebar:
             "Select themes", (), index=None, placeholder="This is not done yet"
         )
 
-# query = st.text_area("Enter your query")
-#
-# if query:
-#     result_user = con.execute(query).df()
-#     st.dataframe(result_user)
+if option_languages == "SQL":
+    query = st.text_area("Enter your query")
+
+tab1, tab2 = st.tabs(["Tables", "Solution"])
+
+with tab1:
+    if query:
+        result_user = con.execute(query).df()
+        st.dataframe(result_user)
+
+    if option_languages == "SQL":
+
+
+with tab2:
+    st.write("Empty for now")
