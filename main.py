@@ -1,16 +1,36 @@
-# This is a sample Python script.
+import streamlit as st
+import duckdb
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+st.write("""
+SRS - Space repetition system application for reviewing programming languages""")
 
+# It will need to be modified !!!
+con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+option_languages = st.selectbox(
+    "What would you like to review?",
+    ("SQL", "Python"),
+    index=None,
+    placeholder="Select programming language",
+)
 
+if option_languages == "SQL":
+    st.selectbox(
+        "Select themes",
+        ("cross_joins", "inner_joins"),
+        index=None,
+        placeholder="Select the theme you want to review"
+    )
+else:
+    st.selectbox(
+        "Select themes",
+        (),
+        index=None,
+        placeholder="This is not done yet"
+    )
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# query = st.text_area("Enter your query")
+#
+# if query:
+#     result_user = con.execute(query).df()
+#     st.dataframe(result_user)
