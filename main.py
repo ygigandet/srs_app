@@ -17,7 +17,7 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 with st.sidebar:
     option_languages = st.selectbox(
         "What would you like to review?",
-        ["SQL", "Python"],
+        ["SQL"],
         index=None,
         placeholder="Select programming language",
     )
