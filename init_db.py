@@ -16,6 +16,7 @@ data = {
     "exercise_name": ["beverages_and_food"],
     "tables": [["beverages", "food_items"]],
     "last_reviewed": ["1970-01-01"],
+    "answer": []
 }
 memory_state_df = pd.DataFrame(data)
 con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state_df")

@@ -45,4 +45,6 @@ with tab1:
         st.dataframe(result_user)
 
 with tab2:
-    st.write("Empty for now")
+    with open(f"answers/beverages_and_food.sql", "r") as f:
+        answer = f.read()
+    st.write(answer)
