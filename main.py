@@ -11,7 +11,6 @@ Application for reviewing programming languages
 """
 )
 
-# It will need to be modified !!!
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
 with st.sidebar:
