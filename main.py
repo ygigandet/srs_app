@@ -59,28 +59,3 @@ with tab3:
 
 with tab4:
     st.text(answer)
-
-# This will be done when we have multiple languages for the application
-
-# with st.sidebar:
-#     option_languages = st.selectbox(
-#         "What would you like to review?",
-#         ["SQL"],
-#         index=None,
-#         placeholder="Select programming language",
-#     )
-#
-#     if option_languages == "SQL":
-#         st.selectbox(
-#             "Select themes",
-#             ("cross_joins", "inner_joins"),
-#             index=None,
-#             placeholder="Select the theme you want to review",
-#         )
-#     else:
-#         st.selectbox(
-#             "Select themes", (), index=None, placeholder="This is not done yet"
-#         )
-#
-# if option_languages == "SQL":
-#     query = st.text_area("Enter your query")
