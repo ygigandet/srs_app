@@ -11,7 +11,6 @@ Application for reviewing programming languages
 """
 )
 
-# It will need to be modified !!!
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
 with st.sidebar:
@@ -25,7 +24,7 @@ with st.sidebar:
     if theme:
         select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
     else:
-        select_exercise_query = f"SELECT * FROM memory_state"
+        select_exercise_query = "SELECT * FROM memory_state"
     exercise = (
         con.execute(select_exercise_query)
         .df()
@@ -35,7 +34,7 @@ with st.sidebar:
 
 query = st.text_area("Write your query here")
 
-tab1, tab2, tab3 = st.tabs(["Exercise", "Tables", "Solution"])
+tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
 
 with tab1:
     exercise_title = exercise.loc[0, "title"]
@@ -53,31 +52,10 @@ with tab2:
 
 with tab3:
     exercise_answer = exercise.loc[0, "answer"]
-    with open(f"answers/{exercise_answer}", "r") as f:
+    with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
         answer = f.read()
-    st.write(answer)
+    exercise_answer_query = con.execute(answer)
+    st.dataframe(exercise_answer_query)
 
-# This will be done when we have multiple languages for the application
-
-# with st.sidebar:
-#     option_languages = st.selectbox(
-#         "What would you like to review?",
-#         ["SQL"],
-#         index=None,
-#         placeholder="Select programming language",
-#     )
-#
-#     if option_languages == "SQL":
-#         st.selectbox(
-#             "Select themes",
-#             ("cross_joins", "inner_joins"),
-#             index=None,
-#             placeholder="Select the theme you want to review",
-#         )
-#     else:
-#         st.selectbox(
-#             "Select themes", (), index=None, placeholder="This is not done yet"
-#         )
-#
-# if option_languages == "SQL":
-#     query = st.text_area("Enter your query")
+with tab4:
+    st.text(answer)
