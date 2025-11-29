@@ -24,7 +24,7 @@ with st.sidebar:
     if theme:
         select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
     else:
-        select_exercise_query = f"SELECT * FROM memory_state"
+        select_exercise_query = "SELECT * FROM memory_state"
     exercise = (
         con.execute(select_exercise_query)
         .df()
@@ -52,7 +52,7 @@ with tab2:
 
 with tab3:
     exercise_answer = exercise.loc[0, "answer"]
-    with open(f"answers/{exercise_answer}", "r") as f:
+    with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
         answer = f.read()
     exercise_answer_query = con.execute(answer)
     st.dataframe(exercise_answer_query)
