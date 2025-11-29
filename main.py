@@ -54,7 +54,7 @@ with tab3:
     exercise_answer = exercise.loc[0, "answer"]
     with open(f"answers/{exercise_answer}", "r") as f:
         answer = f.read()
-    st.write(answer)
+    st.text(answer)
 
 # This will be done when we have multiple languages for the application
 
