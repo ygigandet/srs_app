@@ -34,7 +34,7 @@ with st.sidebar:
 
 query = st.text_area("Write your query here")
 
-tab1, tab2, tab3 = st.tabs(["Exercise", "Tables", "Solution"])
+tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
 
 with tab1:
     exercise_title = exercise.loc[0, "title"]
