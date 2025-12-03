@@ -2,8 +2,8 @@
 
 import io
 
-import pandas as pd
 import duckdb
+import pandas as pd
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 

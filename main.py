@@ -1,7 +1,8 @@
 # pylint: disable=missing-module-docstring
 
-import os
 import logging
+import os
+
 import duckdb
 import streamlit as st
 
@@ -11,7 +12,8 @@ if "data" not in os.listdir():
     os.mkdir("data")
 
 if "exercises_sql_tables.duckdb" not in os.listdir("data"):
-    exec(open("init_db.py").read())
+    with open("init_db.py", "r", encoding="utf-8") as f:
+        exec(f.read())  # pylint: disable=exec-used
 
 st.write(
     """
