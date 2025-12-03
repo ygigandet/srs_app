@@ -95,3 +95,5 @@ order_details_data = {
 
 df_order_details = pd.DataFrame(order_details_data)
 con.execute("CREATE TABLE IF NOT EXISTS details AS SELECT * FROM df_order_details")
+
+con.close()
