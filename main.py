@@ -1,7 +1,9 @@
 # pylint: disable=missing-module-docstring
 
-import os
+import datetime as dt
 import logging
+import os
+
 import duckdb
 import streamlit as st
 
@@ -11,7 +13,8 @@ if "data" not in os.listdir():
     os.mkdir("data")
 
 if "exercises_sql_tables.duckdb" not in os.listdir("data"):
-    exec(open("init_db.py").read())
+    with open("init_db.py", "r", encoding="utf-8") as f:
+        exec(f.read())  # pylint: disable=exec-used
 
 st.write(
     """
@@ -42,16 +45,22 @@ with st.sidebar:
         .reset_index(drop=True)
     )
 
-query = st.text_area("Write your query here")
-
 tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
 
 with tab1:
     exercise_title = exercise.loc[0, "title"]
     st.write(exercise_title)
+    query = st.text_area("Write your query here")
     if query:
         result_user = con.execute(query).df()
         st.dataframe(result_user)
+    exercise_answer = exercise.loc[0, "answer"]
+    with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
+        answer = f.read()
+    if query == answer:
+        st.write("Yes, that's it!")
+        today_date = dt.date.today
+        exercise.loc[0, "last_reviewd"] = today_date
 
 with tab2:
     exercise_tables = exercise.loc[0, "tables"]
@@ -61,9 +70,6 @@ with tab2:
         st.dataframe(df_table)
 
 with tab3:
-    exercise_answer = exercise.loc[0, "answer"]
-    with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
-        answer = f.read()
     exercise_answer_query = con.execute(answer)
     st.dataframe(exercise_answer_query)
 
