@@ -36,6 +36,7 @@ source venv/bin/activate      # (on Windows: `venv\\Scripts\\activate`)
 pip install -r requirements.txt
 python init_db.py             # initialize database
 python main.py                # start the app
+```
 
 📝 How to Use
 
