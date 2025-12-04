@@ -48,8 +48,6 @@ with st.sidebar:
 tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
 
 with tab1:
-    exercise_title = exercise.loc[0, "title"]
-    st.write(exercise_title)
     query = st.text_area("Write your query here")
     if query:
         result_user = con.execute(query).df()
@@ -60,9 +58,13 @@ with tab1:
     if query == answer:
         st.write("Yes, that's it!")
         today_date = dt.date.today
-        exercise.loc[0, "last_reviewd"] = today_date
+        exercise.loc[0, "last_reviewed"] = today_date
 
 with tab2:
+    exercise_instructions = exercise.loc[0, "instructions"]
+    with open(f"instructions/{exercise_instructions}", "r") as f:
+        instructions = f.read()
+    st.text(instructions)
     exercise_tables = exercise.loc[0, "tables"]
     for table in exercise_tables:
         st.write(f"Table: {table}")

@@ -1,0 +1,1 @@
+Instructions: Left join using the tables <orders> and <details>.

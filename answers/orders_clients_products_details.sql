@@ -1,4 +1,4 @@
 SELECT *
-FROM clients
-LEFT JOIN orders
-USING (customer_id)
+FROM orders
+LEFT JOIN details
+USING (order_id)
