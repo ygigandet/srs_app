@@ -1,1 +1,1 @@
-Instructions: Left join using the tables
+Instructions: Left join using the tables <orders> and <details>.
