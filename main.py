@@ -62,8 +62,9 @@ with tab1:
 
 with tab2:
     exercise_instructions = exercise.loc[0, "instructions"]
-    with open(f"instructions/{exercise_instructions}", "r", encoding="utf-8") as f:
-        st.text(f.read())
+    with open(f"instructions/{exercise_instructions}", "r") as f:
+        instructions = f.read()
+    st.text(instructions)
     exercise_tables = exercise.loc[0, "tables"]
     for table in exercise_tables:
         st.write(f"Table: {table}")
