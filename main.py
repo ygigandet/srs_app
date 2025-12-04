@@ -1,6 +1,5 @@
 # pylint: disable=missing-module-docstring
 
-import datetime as dt
 import logging
 import os
 
@@ -57,8 +56,6 @@ with tab1:
         answer = f.read()
     if query == answer:
         st.write("Yes, that's it!")
-        today_date = dt.date.today
-        exercise.loc[0, "last_reviewed"] = today_date
 
 with tab2:
     exercise_instructions = exercise.loc[0, "instructions"]
