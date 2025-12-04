@@ -58,7 +58,7 @@ with tab1:
     if query == answer:
         st.write("Yes, that's it!")
         today_date = dt.date.today
-        exercise.loc[0, "last_reviewd"] = today_date
+        exercise.loc[0, "last_reviewed"] = today_date
 
 with tab2:
     exercise_instructions = exercise.loc[0, "instructions"]
