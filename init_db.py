@@ -2,8 +2,8 @@
 
 import io
 
-import pandas as pd
 import duckdb
+import pandas as pd
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
@@ -95,3 +95,5 @@ order_details_data = {
 
 df_order_details = pd.DataFrame(order_details_data)
 con.execute("CREATE TABLE IF NOT EXISTS details AS SELECT * FROM df_order_details")
+
+con.close()
