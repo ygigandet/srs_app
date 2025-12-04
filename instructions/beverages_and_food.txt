@@ -1,1 +1,1 @@
-This is my test
+Instructions: Cross join using the tables <beverages> and <food_items>.
