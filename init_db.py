@@ -19,7 +19,7 @@ data = {
         ["orders", "clients", "products", "details"],
     ],
     "last_reviewed": ["1970-01-01", "1970-01-01"],
-    "title": ["Cross join between two tables", "Left join between three tables"],
+    "instructions": ["beverages_and_food.txt", "Left join between three tables"],
     "answer": ["beverages_and_food.sql", "orders_clients_products_details.sql"],
 }
 memory_state_df = pd.DataFrame(data)
