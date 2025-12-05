@@ -6,6 +6,8 @@ A **SRS (Spaced Repetition System)** application to help you memorise key elemen
 
 `srs_app` is a simple command-line/interactive tool written in Python that allows you to create, store, and review “flashcards” (questions/answers) so that you can memorise syntax or concepts of programming languages (or anything else). It uses spaced-repetition principles to schedule reviews for optimal long-term retention.
 
+I have deployed this application on Streamlit: https://srs-yooby.streamlit.app/
+
 ## 🔧 Features
 
 - Initialize a local database of flashcards (via `init_db.py`).  
