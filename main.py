@@ -26,24 +26,27 @@ Application for reviewing programming languages
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
-with st.sidebar:
+with (st.sidebar):
     available_theme_df = con.execute("SELECT DISTINCT theme FROM memory_state").df()
-    theme = st.selectbox(
+    selected_theme = st.selectbox(
         "Select theme:",
         available_theme_df["theme"].unique(),
         index=None,
         placeholder="Select theme",
     )
-    if theme:
-        select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
+    if selected_theme:
+        select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{selected_theme}'"
     else:
         select_exercise_query = "SELECT * FROM memory_state"
-    exercise = (
+
+    exercise_selected = (
         con.execute(select_exercise_query)
         .df()
         .sort_values("last_reviewed")
         .reset_index(drop=True)
     )
+    st.write(exercise_selected)
+    exercise_name_selected = exercise_selected.loc[0, "exercise_name"]
 
 tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
 
