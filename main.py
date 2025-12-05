@@ -47,7 +47,6 @@ with st.sidebar:
         .sort_values("last_reviewed")
         .reset_index(drop=True)
     )
-    st.write(exercise_selected)
     exercise_name_selected = exercise_selected.loc[0, "exercise_name"]
 
 tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
