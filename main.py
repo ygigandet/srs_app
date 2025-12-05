@@ -3,6 +3,7 @@
 import logging
 import os
 
+from datetime import date, timedelta
 import duckdb
 import streamlit as st
 
@@ -51,18 +52,23 @@ with tab1:
     if query:
         result_user = con.execute(query).df()
         st.dataframe(result_user)
-    exercise_answer = exercise.loc[0, "answer"]
+    exercise_answer = exercise_selected.loc[0, "answer"]
     with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
         answer = f.read()
     if query == answer:
         st.write("Yes, that's it!")
+    for n_days in [2, 7, 21]:
+        if st.button(f"Review in {n_days} days"):
+            next_review = date.today() + timedelta(days=n_days)
+            con.execute(f"UPDATE memory_state SET last_reviewed = '{next_review}' WHERE exercise_name = '{exercise_name_selected}'")
+            st.rerun()
 
 with tab2:
-    exercise_instructions = exercise.loc[0, "instructions"]
+    exercise_instructions = exercise_selected.loc[0, "instructions"]
     with open(f"instructions/{exercise_instructions}", "r") as f:
         instructions = f.read()
     st.text(instructions)
-    exercise_tables = exercise.loc[0, "tables"]
+    exercise_tables = exercise_selected.loc[0, "tables"]
     for table in exercise_tables:
         st.write(f"Table: {table}")
         df_table = con.execute(f"SELECT * FROM {table}").df()
