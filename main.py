@@ -61,6 +61,7 @@ with tab1:
         answer = f.read()
     if query == answer:
         st.write("Yes, that's it!")
+        st.balloons()
 
     cols = st.columns(3)
 
