@@ -4,8 +4,8 @@ import logging
 import os
 from datetime import date, timedelta
 
-import pandas as pd
 import duckdb
+import pandas as pd
 import streamlit as st
 
 if "data" not in os.listdir():
@@ -30,7 +30,8 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 with st.sidebar:
     available_theme_df = con.execute("SELECT * FROM memory_state").df()
     available_theme = available_theme_df[
-        pd.to_datetime(available_theme_df["last_reviewed"]).dt.date <= date.today()]["theme"].unique()
+        pd.to_datetime(available_theme_df["last_reviewed"]).dt.date <= date.today()
+    ]["theme"].unique()
     selected_theme = st.selectbox(
         "Select theme:",
         available_theme,
