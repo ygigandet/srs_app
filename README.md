@@ -50,11 +50,6 @@ Use the menu/options to add new flashcards (question + answer), review due flash
 
 When reviewing, cards will be scheduled by spaced-repetition logic (oldest due first), helping you memorise efficiently over time.
 
-⚠️ Still work in progress!
-
-The SRS is not yet done.
-More exercises needed to be added.
-
 🧾 License
 
 “All rights reserved”
