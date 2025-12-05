@@ -58,8 +58,11 @@ tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solu
 with tab1:
     query = st.text_area("Write your query here")
     if query:
-        result_user = con.execute(query).df()
-        st.dataframe(result_user)
+        try:
+            result_user = con.execute(query).df()
+            st.dataframe(result_user)
+        except duckdb.Error as e:
+            st.error("There was an error executing your SQL query. Please check your syntax or else")
     exercise_answer = exercise_selected.loc[0, "answer"]
     with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
         answer = f.read()
