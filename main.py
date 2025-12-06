@@ -8,6 +8,8 @@ import duckdb
 import pandas as pd
 import streamlit as st
 
+from init_json import memory_state_python_df
+
 if "data" not in os.listdir():
     logging.error(os.listdir())
     logging.error("Creating data folder")
@@ -16,6 +18,10 @@ if "data" not in os.listdir():
 if "exercises_sql_tables.duckdb" not in os.listdir("data"):
     with open("init_db.py", "r", encoding="utf-8") as f:
         exec(f.read())  # pylint: disable=exec-used
+
+if "drilling_machine1.json" not in os.listdir("data"):
+    with open("init_json.py", "r", encoding="utf-8") as f:
+        exec(f.read())
 
 st.write(
     """
@@ -58,8 +64,17 @@ with st.sidebar:
             .reset_index(drop=True)
         )
         exercise_name_selected = exercise_selected.loc[0, "exercise_name"]
-    else:
-        st.write("Nothing yet")
+    if selected_language == "Python":
+        memory_state_python = memory_state_python_df
+        available_theme = memory_state_python[
+            pd.to_datetime(memory_state_python["last_reviewed"]).dt.date <= date.today()
+            ]["theme"].unique()
+        selected_theme = st.selectbox(
+            "Select theme:",
+            available_theme,
+            index=None,
+            placeholder="Select theme",
+        )
 
 if selected_language == "SQL":
     tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
@@ -106,4 +121,4 @@ if selected_language == "SQL":
     with tab4:
         st.text(answer)
 else:
-    st.write("On progress")
+    st.write("Ongoing progress")
