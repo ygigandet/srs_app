@@ -3,6 +3,7 @@
 import logging
 import os
 from datetime import date, timedelta
+import json
 
 import duckdb
 import pandas as pd
