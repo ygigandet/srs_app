@@ -121,5 +121,21 @@ if selected_language == "SQL":
 
     with tab4:
         st.text(answer)
+elif selected_language == "Python":
+    with open("data/drilling_machine1.json") as f:
+        data = json.load(f)
+    tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "JSON file", "Expected result", "Solution"])
+
+    with tab1:
+        code = st.text_area("Write your code here:")
+
+    with tab2:
+        st.json(data)
+
+    with tab3:
+        st.write("Tab3")
+
+    with tab4:
+        st.write("Tab4")
 else:
-    st.write("Ongoing progress")
+    st.write("Choose a language!")
