@@ -4,10 +4,12 @@ import logging
 import os
 from datetime import date, timedelta
 import json
+import subprocess
 
 import duckdb
 import pandas as pd
 import streamlit as st
+from streamlit_ace import st_ace
 
 from init_json import memory_state_python_df
 
@@ -127,7 +129,27 @@ elif selected_language == "Python":
     tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "JSON file", "Expected result", "Solution"])
 
     with tab1:
-        code = st.text_area("Write your code here:")
+        code = st_ace(
+            language = selected_language,
+            show_gutter = True,
+            key = "editor"
+        )
+        drilling_machine = memory_state_python_df
+        if st.button("Run code"):
+            try:
+                with open("tempo_code.py", "w") as f:
+                    f.write(code)
+
+                result = subprocess.run(["python", "tempo_code.py"], capture_output=True, text=True)
+
+                st.subheader("Output:")
+                st.text(result.stdout)
+                if result.stderr:
+                    st.error(result.stderr)
+            except Exception as e:
+                st.error(f"Error: {e}")
+        else:
+            st.warning("Currently, only Python code execution is supported.")
 
     with tab2:
         st.json(data)
