@@ -152,6 +152,9 @@ elif selected_language == "Python":
             st.warning("Currently, only Python code execution is supported.")
 
     with tab2:
+        exercise_selected = memory_state_python_df.loc[0, "instructions"]
+        with open(f"instructions/{exercise_selected}", "r", encoding="utf-8") as f:
+            st.write(f.read())
         st.json(data)
 
     with tab3:
