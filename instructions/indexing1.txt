@@ -1,0 +1,1 @@
+Use indexing to retrieve the letters only on the machine_id. The dataframe is called by using <drilling_machine>.
