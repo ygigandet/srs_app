@@ -37,6 +37,16 @@ def execute_user_query(user_query: str) -> None:
         )
 
 
+def display_available_theme():
+    """
+    Load and return available themes from the memory_state table
+    """
+    available_theme_df = con.execute("SELECT * FROM memory_state").df()
+    return available_theme_df[
+        pd.to_datetime(available_theme_df["last_reviewed"]).dt.date <= date.today()
+    ]["theme"].unique()
+
+
 st.write(
     """
 # SRS - Space repetition system 
@@ -47,11 +57,9 @@ Application for reviewing programming languages
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
+
 with st.sidebar:
-    available_theme_df = con.execute("SELECT * FROM memory_state").df()
-    available_theme = available_theme_df[
-        pd.to_datetime(available_theme_df["last_reviewed"]).dt.date <= date.today()
-    ]["theme"].unique()
+    available_theme = display_available_theme()
     selected_theme = st.selectbox(
         "Select theme:",
         available_theme,
