@@ -17,6 +17,36 @@ if "exercises_sql_tables.duckdb" not in os.listdir("data"):
     with open("init_db.py", "r", encoding="utf-8") as f:
         exec(f.read())  # pylint: disable=exec-used
 
+
+def execute_user_query(user_query: str) -> None:
+    """
+    Execute a user-provided SQL query and display the result in Streamlit.
+
+    If the query execution fails, an error message is shown instead.
+    """
+    if not user_query:
+        return
+
+    try:
+        result_user = con.execute(user_query).df()
+        st.dataframe(result_user)
+    except duckdb.Error:
+        st.error(
+            "There was an error executing your SQL query. "
+            "Please check your syntax and try again."
+        )
+
+
+def display_available_theme():
+    """
+    Load and return available themes from the memory_state table
+    """
+    available_theme_df = con.execute("SELECT * FROM memory_state").df()
+    return available_theme_df[
+        pd.to_datetime(available_theme_df["last_reviewed"]).dt.date <= date.today()
+    ]["theme"].unique()
+
+
 st.write(
     """
 # SRS - Space repetition system 
@@ -27,11 +57,9 @@ Application for reviewing programming languages
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
+
 with st.sidebar:
-    available_theme_df = con.execute("SELECT * FROM memory_state").df()
-    available_theme = available_theme_df[
-        pd.to_datetime(available_theme_df["last_reviewed"]).dt.date <= date.today()
-    ]["theme"].unique()
+    available_theme = display_available_theme()
     selected_theme = st.selectbox(
         "Select theme:",
         available_theme,
@@ -57,9 +85,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solu
 
 with tab1:
     query = st.text_area("Write your query here")
-    if query:
-        result_user = con.execute(query).df()
-        st.dataframe(result_user)
+    execute_user_query(query)
     exercise_answer = exercise_selected.loc[0, "answer"]
     with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
         answer = f.read()
