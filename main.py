@@ -94,13 +94,12 @@ with st.sidebar:
         st.stop()
 
     exercise_name_selected = st.selectbox(
-        "Select exercise:",
-        exercise_selected["exercise_name"].tolist()
+        "Select exercise:", exercise_selected["exercise_name"].tolist()
     )
 
     current_exercise = exercise_selected[
         exercise_selected["exercise_name"] == exercise_name_selected
-        ].iloc[0]
+    ].iloc[0]
 
 # tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
