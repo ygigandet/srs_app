@@ -88,7 +88,19 @@ with st.sidebar:
         .sort_values("last_reviewed")
         .reset_index(drop=True)
     )
-    exercise_name_selected = exercise_selected.loc[0, "exercise_name"]
+
+    if exercise_selected.empty:
+        st.warning("No exercise available for this theme.")
+        st.stop()
+
+    exercise_name_selected = st.selectbox(
+        "Select exercise:",
+        exercise_selected["exercise_name"].tolist()
+    )
+
+    current_exercise = exercise_selected[
+        exercise_selected["exercise_name"] == exercise_name_selected
+        ].iloc[0]
 
 # tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
@@ -99,7 +111,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solu
 with tab1:
     query = st.text_area("Write your query here")
     execute_user_query(query)
-    exercise_answer = exercise_selected.loc[0, "answer"]
+    exercise_answer = current_exercise["answer"]
     with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
         answer = f.read()
     if query == answer:
@@ -122,11 +134,11 @@ with tab1:
 # TAB 2: INSTRUCTIONS AND TABLES
 # ------------------
 with tab2:
-    exercise_instructions = exercise_selected.loc[0, "instructions"]
+    exercise_instructions = current_exercise["instructions"]
     with open(f"instructions/{exercise_instructions}", "r", encoding="utf-8") as f:
         instructions = f.read()
     st.text(instructions)
-    exercise_tables = exercise_selected.loc[0, "tables"]
+    exercise_tables = current_exercise["tables"]
     for table in exercise_tables:
         st.write(f"Table: {table}")
         df_table = con.execute(f"SELECT * FROM {table}").df()
