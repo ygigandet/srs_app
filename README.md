@@ -10,7 +10,7 @@ A **SRS (Spaced Repetition System)** application to help you memorise key elemen
 
 Deployed on Streamlit: 
 
-<a href="https://your-streamlit-app.streamlit.app" target="_blank">
+<a href="https://srs-yooby.streamlit.app/" target="_blank">
   <img src="https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white">
 </a>
 
