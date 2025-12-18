@@ -52,6 +52,22 @@ def display_available_theme():
         pd.to_datetime(available_theme_df["last_reviewed"]).dt.date <= date.today()
     ]["theme"].unique()
 
+def display_available_exercise(selected_theme: str):
+    """
+    Load and return available exercises from the memory_state table according to the theme
+    """
+    exercises_df = con.execute(select_exercise_query).df()
+    exercises_df["last_reviewed"] = pd.to_datetime(
+        exercises_df["last_reviewed"]
+    ).dt.date
+    exercises_filtered = exercises_df[
+        (exercises_df["theme"] == selected_theme)
+        & (exercises_df["last_reviewed"] <= date.today())
+    ].sort_values("last_reviewed").reset_index(drop=True)
+    return exercises_filtered
+
+
+
 
 # ------------------------------------------------------------
 # STREAMLIT
@@ -69,6 +85,10 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 # Sidebar
 with st.sidebar:
     available_theme = display_available_theme()
+    if not len(available_theme):
+        st.warning("No themes are available for review today.")
+        st.stop()
+
     selected_theme = st.selectbox(
         "Select theme:",
         available_theme,
@@ -82,19 +102,16 @@ with st.sidebar:
     else:
         select_exercise_query = "SELECT * FROM memory_state"
 
-    exercise_selected = (
-        con.execute(select_exercise_query)
-        .df()
-        .sort_values("last_reviewed")
-        .reset_index(drop=True)
-    )
-
+    exercise_selected = display_available_exercise(selected_theme)
     if exercise_selected.empty:
-        st.warning("No exercise available for this theme.")
+        st.warning("No exercises are available for this theme today.")
         st.stop()
 
     exercise_name_selected = st.selectbox(
-        "Select exercise:", exercise_selected["exercise_name"].tolist()
+        "Select exercise:",
+        exercise_selected["exercise_name"].tolist(),
+        index=None,
+        placeholder="Select exercise",
     )
 
     current_exercise = exercise_selected[
