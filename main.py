@@ -8,6 +8,9 @@ import duckdb
 import pandas as pd
 import streamlit as st
 
+# ------------------------------------------------------------
+# INITIALIZE DATA FOLDER AND DUCKDB DATABASE
+# ------------------------------------------------------------
 if "data" not in os.listdir():
     logging.error(os.listdir())
     logging.error("Creating data folder")
@@ -18,6 +21,9 @@ if "exercises_sql_tables.duckdb" not in os.listdir("data"):
         exec(f.read())  # pylint: disable=exec-used
 
 
+# ------------------------------------------------------------
+# FUNCTIONS
+# ------------------------------------------------------------
 def execute_user_query(user_query: str) -> None:
     """
     Execute a user-provided SQL query and display the result in Streamlit.
@@ -47,6 +53,9 @@ def display_available_theme():
     ]["theme"].unique()
 
 
+# ------------------------------------------------------------
+# STREAMLIT
+# ------------------------------------------------------------
 st.write(
     """
 # SRS - Space repetition system 
@@ -57,7 +66,7 @@ Application for reviewing programming languages
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
-
+# Sidebar
 with st.sidebar:
     available_theme = display_available_theme()
     selected_theme = st.selectbox(
@@ -81,8 +90,12 @@ with st.sidebar:
     )
     exercise_name_selected = exercise_selected.loc[0, "exercise_name"]
 
+# tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
 
+# ------------------
+# TAB 1: EXERCISE
+# ------------------
 with tab1:
     query = st.text_area("Write your query here")
     execute_user_query(query)
@@ -105,6 +118,9 @@ with tab1:
                 )
                 st.rerun()
 
+# ------------------
+# TAB 2: INSTRUCTIONS AND TABLES
+# ------------------
 with tab2:
     exercise_instructions = exercise_selected.loc[0, "instructions"]
     with open(f"instructions/{exercise_instructions}", "r", encoding="utf-8") as f:
@@ -116,9 +132,15 @@ with tab2:
         df_table = con.execute(f"SELECT * FROM {table}").df()
         st.dataframe(df_table)
 
+# ------------------
+# TAB 3: EXPECTED RESULT
+# ------------------
 with tab3:
     exercise_answer_query = con.execute(answer)
     st.dataframe(exercise_answer_query)
 
+# ------------------
+# TAB 3: SOLUTION
+# ------------------
 with tab4:
     st.text(answer)
