@@ -53,6 +53,23 @@ def display_available_theme():
     ]["theme"].unique()
 
 
+def display_available_exercise(selected_theme_user: str):
+    """
+    Load and return available exercises from the memory_state table according to the theme
+    """
+    query_f = f"SELECT * FROM memory_state WHERE theme = '{selected_theme_user}'"
+    exercises_df = con.execute(query_f).df()
+    exercises_df["last_reviewed"] = pd.to_datetime(
+        exercises_df["last_reviewed"]
+    ).dt.date
+    exercises_filtered = (
+        exercises_df[exercises_df["last_reviewed"] <= date.today()]
+        .sort_values("last_reviewed")
+        .reset_index(drop=True)
+    )
+    return exercises_filtered
+
+
 # ------------------------------------------------------------
 # STREAMLIT
 # ------------------------------------------------------------
@@ -69,34 +86,28 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 # Sidebar
 with st.sidebar:
     available_theme = display_available_theme()
+    if len(available_theme) == 0:
+        st.warning("No themes are available for review today.")
+        st.stop()
+
     selected_theme = st.selectbox(
-        "Select theme:",
-        available_theme,
-        index=None,
-        placeholder="Select theme",
-    )
-    if selected_theme:
-        select_exercise_query = (
-            f"SELECT * FROM memory_state WHERE theme = '{selected_theme}'"
-        )
-    else:
-        select_exercise_query = "SELECT * FROM memory_state"
-
-    exercise_selected = (
-        con.execute(select_exercise_query)
-        .df()
-        .sort_values("last_reviewed")
-        .reset_index(drop=True)
+        "Select theme:", available_theme, index=None, placeholder="Select theme"
     )
 
+    if selected_theme is None:
+        st.info("Please select a theme to see available exercises.")
+        st.stop()
+
+    exercise_selected = display_available_exercise(selected_theme)
     if exercise_selected.empty:
-        st.warning("No exercise available for this theme.")
+        st.warning("No exercises are available for this theme today.")
         st.stop()
 
     exercise_name_selected = st.selectbox(
         "Select exercise:", exercise_selected["exercise_name"].tolist()
     )
 
+    # Access current exercise safely
     current_exercise = exercise_selected[
         exercise_selected["exercise_name"] == exercise_name_selected
     ].iloc[0]
