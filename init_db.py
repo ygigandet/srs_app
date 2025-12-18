@@ -12,15 +12,32 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 # ------------------------------------------------------------
 
 data = {
-    "theme": ["cross_join", "left_join"],
-    "exercise_name": ["beverages_and_food", "orders_clients_products_details"],
+    "theme": ["cross_join", "left_join", "left_join", "inner_join"],
+    "exercise_name": [
+        "beverages_and_food",
+        "orders_details",
+        "customers_orders",
+        "orders_products",
+    ],
     "tables": [
         ["beverages", "food_items"],
-        ["orders", "clients", "products", "details"],
+        ["orders", "customers", "products", "details"],
+        ["orders", "customers", "products", "details"],
+        ["orders", "customers", "products", "details"],
     ],
-    "last_reviewed": ["1970-01-01", "1970-01-01"],
-    "instructions": ["beverages_and_food.txt", "orders_clients_products_details.txt"],
-    "answer": ["beverages_and_food.sql", "orders_clients_products_details.sql"],
+    "last_reviewed": ["1970-01-01", "1970-01-01", "1970-01-01", "1970-01-01"],
+    "instructions": [
+        "beverages_and_food.txt",
+        "orders_details.txt",
+        "customers_orders.txt",
+        "orders_details_ij.txt",
+    ],
+    "answer": [
+        "beverages_and_food.sql",
+        "orders_details.sql",
+        "customers_orders.sql",
+        "orders_details_ij.sql",
+    ],
 }
 memory_state_df = pd.DataFrame(data)
 con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state_df")
@@ -73,7 +90,7 @@ clients_data = {
 }
 
 df_customers = pd.DataFrame(clients_data)
-con.execute("CREATE TABLE IF NOT EXISTS clients AS SELECT * FROM df_customers")
+con.execute("CREATE TABLE IF NOT EXISTS customers AS SELECT * FROM df_customers")
 
 # Products table
 p_names = ["Laptop", "Ipad", "Livre", "Petitos"]

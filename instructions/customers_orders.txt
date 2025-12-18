@@ -1,0 +1,1 @@
+Instructions: Left join using the tables <customers> and <details> using a CTE called <detailed_orders>, using a left join on the tables <orders> and <details>.
