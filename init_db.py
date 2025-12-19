@@ -12,13 +12,21 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 # ------------------------------------------------------------
 
 data = {
-    "theme": ["cross_join", "cross_join", "left_join", "left_join", "inner_join"],
+    "theme": [
+        "cross_join",
+        "cross_join",
+        "left_join",
+        "left_join",
+        "inner_join",
+        "inner_join",
+    ],
     "exercise_name": [
         "beverages_and_food",
         "sizes_trademarks",
         "orders_details",
         "customers_orders",
-        "orders_products",
+        "orders_details",
+        "salaries_seniority",
     ],
     "tables": [
         ["beverages", "food_items"],
@@ -26,14 +34,23 @@ data = {
         ["orders", "customers", "products", "details"],
         ["orders", "customers", "products", "details"],
         ["orders", "customers", "products", "details"],
+        ["salaries", "seniority"],
     ],
-    "last_reviewed": ["1970-01-01", "1970-01-01", "1970-01-01", "1970-01-01", "1970-01-01"],
+    "last_reviewed": [
+        "1970-01-01",
+        "1970-01-01",
+        "1970-01-01",
+        "1970-01-01",
+        "1970-01-01",
+        "1970-01-01",
+    ],
     "instructions": [
         "beverages_and_food.txt",
         "sizes_trademarks.txt",
         "orders_details.txt",
         "customers_orders.txt",
         "orders_details_ij.txt",
+        "salary_seniority.txt",
     ],
     "answer": [
         "beverages_and_food.sql",
@@ -41,6 +58,7 @@ data = {
         "orders_details.sql",
         "customers_orders.sql",
         "orders_details_ij.sql",
+        "salary_seniority.sql",
     ],
 }
 memory_state_df = pd.DataFrame(data)
@@ -138,5 +156,28 @@ order_details_data = {
 
 df_order_details = pd.DataFrame(order_details_data)
 con.execute("CREATE TABLE IF NOT EXISTS details AS SELECT * FROM df_order_details")
+
+# ------------------------------------------------------------
+# INNER JOIN EXERCISES
+# ------------------------------------------------------------
+
+CSV5 = """
+salary,employee_id
+5000,1
+6000,2
+6200,3
+"""
+
+salaries = pd.read_csv(io.StringIO(CSV5))
+con.execute("CREATE TABLE IF NOT EXISTS salaries AS SELECT * FROM salaries")
+
+CSV6 = """
+employee_id,seniority
+1,2
+2,5
+"""
+
+seniority = pd.read_csv(io.StringIO(CSV6))
+con.execute("CREATE TABLE IF NOT EXISTS seniority AS SELECT * FROM seniority")
 
 con.close()
