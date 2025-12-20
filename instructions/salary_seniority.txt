@@ -1,0 +1,1 @@
+Instructions: Inner join using the tables <salaries> and <seniority>. Select employee_id from the table <salaries> and seniority. Do not use aliases!
