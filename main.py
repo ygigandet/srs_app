@@ -8,114 +8,190 @@ import duckdb
 import pandas as pd
 import streamlit as st
 
+
 # ------------------------------------------------------------
-# INITIALIZE DATA FOLDER AND DUCKDB DATABASE
+# USER LOGIN (works locally & free Streamlit Cloud)
+# ------------------------------------------------------------
+def get_user_id():
+    """
+    Simple login system for free Streamlit Cloud.
+    """
+    if "user_id" not in st.session_state:
+        username = st.text_input("Enter your username", key="login_input")
+        login_pressed = st.button("Login")
+        if login_pressed:
+            username = username.strip()
+            if username != "":
+                st.session_state.user_id = username
+            else:
+                st.warning("Please enter a valid username.")
+        st.stop()  # Stop until login
+    return st.session_state.user_id
+
+
+USER_ID = get_user_id()
+st.write(f"Logged in as: {USER_ID}")
+
+# ------------------------------------------------------------
+# INITIALIZE DATA FOLDER AND DATABASE
 # ------------------------------------------------------------
 if "data" not in os.listdir():
-    logging.error(os.listdir())
-    logging.error("Creating data folder")
+    logging.info("Creating data folder")
     os.mkdir("data")
 
+DB_PATH = "data/exercises_sql_tables.duckdb"
 if "exercises_sql_tables.duckdb" not in os.listdir("data"):
     with open("init_db.py", "r", encoding="utf-8") as f:
-        exec(f.read())  # pylint: disable=exec-used
+        # pylint: disable=exec-used
+        exec(f.read())
+
+# Connect to DuckDB
+con = duckdb.connect(database=DB_PATH, read_only=False)
+
+
+# ------------------------------------------------------------
+# INITIALIZE USER PROGRESS
+# ------------------------------------------------------------
+def init_user_progress(user_id):
+    """
+    Add all exercises to user's progress if missing.
+    """
+    con.execute(
+        """
+        INSERT OR IGNORE INTO user_progress (user_id, exercise_name, last_reviewed)
+        SELECT ?, exercise_name, DATE '1970-01-01'
+        FROM exercises
+        WHERE exercise_name NOT IN (
+            SELECT exercise_name FROM user_progress WHERE user_id = ?
+        )
+    """,
+        (user_id, user_id),
+    )
+
+
+init_user_progress(USER_ID)
 
 
 # ------------------------------------------------------------
 # FUNCTIONS
 # ------------------------------------------------------------
 def reset_query():
+    """
+    Erase the query when user selects either new theme or new exercise.
+    :return:
+    """
     st.session_state.query = ""
+
 
 def execute_user_query(user_query: str) -> None:
     """
-    Execute a user-provided SQL query and display the result in Streamlit.
-
-    If the query execution fails, an error message is shown instead.
+    Execution of the query
+    :param user_query:
+    :return:
     """
     if not user_query:
         return
-
     try:
         result_user = con.execute(user_query).df()
         st.dataframe(result_user)
     except duckdb.Error:
-        st.error(
-            "There was an error executing your SQL query. "
-            "Please check your syntax and try again."
-        )
+        st.error("There was an error executing your SQL query. Check syntax.")
 
 
-def display_available_theme():
+def display_available_theme(user_id):
     """
-    Load and return available themes from the memory_state table
+    Load available themes for the user where exercises are due today or earlier.
     """
-    available_theme_df = con.execute("SELECT * FROM memory_state").df()
-    return available_theme_df[
-        pd.to_datetime(available_theme_df["last_reviewed"]).dt.date <= date.today()
-    ]["theme"].unique()
+    df = con.execute(
+        """
+        SELECT e.theme, up.last_reviewed
+        FROM exercises e
+        JOIN user_progress up
+        ON e.exercise_name = up.exercise_name
+        WHERE up.user_id = ?
+    """,
+        (user_id,),
+    ).df()
+
+    # Convert last_reviewed to Python date
+    df["last_reviewed"] = pd.to_datetime(df["last_reviewed"]).dt.date
+
+    # Filter for exercises that are due today or earlier
+    available_df = df[df["last_reviewed"] <= date.today()]
+
+    # Return unique themes
+    return available_df["theme"].unique()
 
 
-def display_available_exercise(selected_theme_user: str):
+def display_available_exercise(user_id, selected_theme_user):
     """
-    Load and return available exercises from the memory_state table according to the theme
+    Load exercises for the user in the selected theme that are due today or earlier.
     """
-    query_f = f"SELECT * FROM memory_state WHERE theme = '{selected_theme_user}'"
-    exercises_df = con.execute(query_f).df()
-    exercises_df["last_reviewed"] = pd.to_datetime(
-        exercises_df["last_reviewed"]
-    ).dt.date
-    exercises_filtered = (
-        exercises_df[exercises_df["last_reviewed"] <= date.today()]
-        .sort_values("last_reviewed")
-        .reset_index(drop=True)
+    df = con.execute(
+        """
+        SELECT e.*, up.last_reviewed
+        FROM exercises e
+        JOIN user_progress up
+        ON e.exercise_name = up.exercise_name
+        WHERE up.user_id = ?
+        AND e.theme = ?
+    """,
+        (user_id, selected_theme_user),
+    ).df()
+
+    # Convert last_reviewed to Python date
+    df["last_reviewed"] = pd.to_datetime(df["last_reviewed"]).dt.date
+
+    # Filter exercises due today or earlier
+    exercises_filtered = df[df["last_reviewed"] <= date.today()]
+
+    # Sort by last_reviewed ascending
+    exercises_filtered = exercises_filtered.sort_values("last_reviewed").reset_index(
+        drop=True
     )
+
     return exercises_filtered
 
 
 # ------------------------------------------------------------
-# STREAMLIT
+# STREAMLIT UI
 # ------------------------------------------------------------
-st.write(
-    """
-# SRS - Space repetition system 
-
-Application for reviewing programming languages
-"""
-)
-
-con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
+st.title("SRS - Space Repetition System")
+st.write("Application for reviewing programming languages")
 
 # Sidebar
 with st.sidebar:
-    available_theme = display_available_theme()
+    available_theme = display_available_theme(USER_ID)
     if len(available_theme) == 0:
         st.warning("No themes are available for review today.")
         st.stop()
 
     selected_theme = st.selectbox(
-        "Select theme:", available_theme, index=None, placeholder="Select theme", on_change=reset_query
+        "Select theme:",
+        available_theme,
+        index=None,
+        placeholder="Select theme",
+        on_change=reset_query,
     )
-
     if selected_theme is None:
         st.info("Please select a theme to see available exercises.")
         st.stop()
 
-    exercise_selected = display_available_exercise(selected_theme)
+    exercise_selected = display_available_exercise(USER_ID, selected_theme)
     if exercise_selected.empty:
         st.warning("No exercises are available for this theme today.")
         st.stop()
 
     exercise_name_selected = st.selectbox(
-        "Select exercise:", exercise_selected["exercise_name"].tolist(), on_change=reset_query
+        "Select exercise:",
+        exercise_selected["exercise_name"].tolist(),
+        on_change=reset_query,
     )
-
-    # Access current exercise safely
     current_exercise = exercise_selected[
         exercise_selected["exercise_name"] == exercise_name_selected
     ].iloc[0]
 
-# tabs
+# Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
 
 # ------------------
@@ -132,16 +208,19 @@ with tab1:
         st.balloons()
 
     cols = st.columns(3)
-
     for col, n_days in zip(cols, [2, 7, 21]):
         with col:
             if st.button(f"Review in {n_days} days"):
                 next_review = date.today() + timedelta(days=n_days)
                 con.execute(
-                    f"UPDATE memory_state SET last_reviewed = '{next_review}' \
-                    WHERE exercise_name = '{exercise_name_selected}'",
+                    """
+                    UPDATE user_progress
+                    SET last_reviewed = ?
+                    WHERE user_id = ?
+                    AND exercise_name = ?
+                """,
+                    (next_review, USER_ID, exercise_name_selected),
                 )
-                st.rerun()
 
 # ------------------
 # TAB 2: INSTRUCTIONS AND TABLES
@@ -161,11 +240,11 @@ with tab2:
 # TAB 3: EXPECTED RESULT
 # ------------------
 with tab3:
-    exercise_answer_query = con.execute(answer)
+    exercise_answer_query = con.execute(answer).df()
     st.dataframe(exercise_answer_query)
 
 # ------------------
-# TAB 3: SOLUTION
+# TAB 4: SOLUTION
 # ------------------
 with tab4:
     st.text(answer)

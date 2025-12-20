@@ -5,12 +5,12 @@ import io
 import duckdb
 import pandas as pd
 
+# Connect to DuckDB
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
 # ------------------------------------------------------------
-# EXERCISES LIST
+# Global exercise definitions
 # ------------------------------------------------------------
-
 data = {
     "theme": [
         "cross_join",
@@ -36,14 +36,6 @@ data = {
         ["orders", "customers", "products", "details"],
         ["salaries", "seniority"],
     ],
-    "last_reviewed": [
-        "1970-01-01",
-        "1970-01-01",
-        "1970-01-01",
-        "1970-01-01",
-        "1970-01-01",
-        "1970-01-01",
-    ],
     "instructions": [
         "beverages_and_food.txt",
         "sizes_trademarks.txt",
@@ -61,123 +53,131 @@ data = {
         "salary_seniority.sql",
     ],
 }
-memory_state_df = pd.DataFrame(data)
-con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state_df")
+
+exercises_df = pd.DataFrame(data)
+
+# Create exercises table
+con.execute(
+    """
+CREATE TABLE IF NOT EXISTS exercises (
+    exercise_name TEXT PRIMARY KEY,
+    theme TEXT,
+    tables TEXT[],
+    instructions TEXT,
+    answer TEXT
+)
+"""
+)
+
+# Insert exercises
+con.execute("INSERT OR IGNORE INTO exercises SELECT * FROM exercises_df")
 
 # ------------------------------------------------------------
-# CROSS JOIN EXERCISES
+# USER PROGRESS TABLE
+# ------------------------------------------------------------
+con.execute(
+    """
+CREATE TABLE IF NOT EXISTS user_progress (
+    user_id TEXT,
+    exercise_name TEXT,
+    last_reviewed DATE,
+    PRIMARY KEY (user_id, exercise_name)
+)
+"""
+)
+
+# ------------------------------------------------------------
+# EXERCISES TABLES
 # ------------------------------------------------------------
 
-CSV = """
-beverage,price
+# CROSS JOIN exercises
+BEVERAGES_CSV = """beverage,price
 orange juice,2.5
 Expresso,2
 Tea,3
 """
-
-beverages = pd.read_csv(io.StringIO(CSV))
+beverages = pd.read_csv(io.StringIO(BEVERAGES_CSV))
 con.execute("CREATE TABLE IF NOT EXISTS beverages AS SELECT * FROM beverages")
 
-CSV2 = """
-food_item,food_price
+FOOD_CSV = """food_item,food_price
 cookie juice,2.5
 chocolatine,2
 muffin,3
 """
-
-food_items = pd.read_csv(io.StringIO(CSV2))
+food_items = pd.read_csv(io.StringIO(FOOD_CSV))
 con.execute("CREATE TABLE IF NOT EXISTS food_items AS SELECT * FROM food_items")
 
-CSV3 = """
-size
+SIZES_CSV = """size
 XS
 S
 M
 L
 XL
 """
-
-sizes = pd.read_csv(io.StringIO(CSV3))
+sizes = pd.read_csv(io.StringIO(SIZES_CSV))
 con.execute("CREATE TABLE IF NOT EXISTS sizes AS SELECT * FROM sizes")
 
-CSV4 = """
-trademark
+TRADEMARKS_CSV = """trademark
 Patagonia
 Picture
 Nike
 """
-
-trademarks = pd.read_csv(io.StringIO(CSV4))
+trademarks = pd.read_csv(io.StringIO(TRADEMARKS_CSV))
 con.execute("CREATE TABLE IF NOT EXISTS trademarks AS SELECT * FROM trademarks")
 
-# ------------------------------------------------------------
-# LEFT JOIN EXERCISES
-# ------------------------------------------------------------
+# LEFT JOIN exercises
+ORDERS_DF = pd.DataFrame(
+    {"order_id": [1, 2, 3, 4, 5], "customer_id": [101, 102, 103, 104, 105]}
+)
+con.execute("CREATE TABLE IF NOT EXISTS orders AS SELECT * FROM ORDERS_DF")
 
-# Orders tables
-orders_data = {"order_id": [1, 2, 3, 4, 5], "customer_id": [101, 102, 103, 104, 105]}
+CUSTOMERS_DF = pd.DataFrame(
+    {
+        "customer_id": [101, 102, 103, 104, 105, 106],
+        "customer_name": [
+            "Toufik",
+            "Daniel",
+            "Tancrède",
+            "Kaouter",
+            "Jean-Nicolas",
+            "David",
+        ],
+    }
+)
+con.execute("CREATE TABLE IF NOT EXISTS customers AS SELECT * FROM CUSTOMERS_DF")
 
-df_orders = pd.DataFrame(orders_data)
-con.execute("CREATE TABLE IF NOT EXISTS orders AS SELECT * FROM df_orders")
+PRODUCTS_DF = pd.DataFrame(
+    {
+        "product_id": [101, 103, 104, 105],
+        "product_name": ["Laptop", "Ipad", "Livre", "Petitos"],
+        "product_price": [800, 400, 30, 2],
+    }
+)
+con.execute("CREATE TABLE IF NOT EXISTS products AS SELECT * FROM PRODUCTS_DF")
 
-# Clients table
-clients_data = {
-    "customer_id": [101, 102, 103, 104, 105, 106],
-    "customer_name": [
-        "Toufik",
-        "Daniel",
-        "Tancrède",
-        "Kaouter",
-        "Jean-Nicolas",
-        "David",
-    ],
-}
+DETAILS_DF = pd.DataFrame(
+    {
+        "order_id": [1, 2, 3, 4, 5],
+        "product_id": [102, 104, 101, 103, 105],
+        "quantity": [2, 1, 3, 2, 1],
+    }
+)
+con.execute("CREATE TABLE IF NOT EXISTS details AS SELECT * FROM DETAILS_DF")
 
-df_customers = pd.DataFrame(clients_data)
-con.execute("CREATE TABLE IF NOT EXISTS customers AS SELECT * FROM df_customers")
-
-# Products table
-p_names = ["Laptop", "Ipad", "Livre", "Petitos"]
-products_data = {
-    "product_id": [101, 103, 104, 105],
-    "product_name": p_names,
-    "product_price": [800, 400, 30, 2],
-}
-
-df_products = pd.DataFrame(products_data)
-con.execute("CREATE TABLE IF NOT EXISTS products AS SELECT * FROM df_products")
-
-# Details table
-order_details_data = {
-    "order_id": [1, 2, 3, 4, 5],
-    "product_id": [102, 104, 101, 103, 105],
-    "quantity": [2, 1, 3, 2, 1],
-}
-
-df_order_details = pd.DataFrame(order_details_data)
-con.execute("CREATE TABLE IF NOT EXISTS details AS SELECT * FROM df_order_details")
-
-# ------------------------------------------------------------
-# INNER JOIN EXERCISES
-# ------------------------------------------------------------
-
-CSV5 = """
-salary,employee_id
+# INNER JOIN exercises
+SALARIES_DF = """salary,employee_id
 5000,1
 6000,2
 6200,3
 """
-
-salaries = pd.read_csv(io.StringIO(CSV5))
+salaries = pd.read_csv(io.StringIO(SALARIES_DF))
 con.execute("CREATE TABLE IF NOT EXISTS salaries AS SELECT * FROM salaries")
 
-CSV6 = """
-employee_id,seniority
+SENIORITY_CSV = """employee_id,seniority
 1,2
 2,5
 """
-
-seniority = pd.read_csv(io.StringIO(CSV6))
+seniority = pd.read_csv(io.StringIO(SENIORITY_CSV))
 con.execute("CREATE TABLE IF NOT EXISTS seniority AS SELECT * FROM seniority")
 
 con.close()
