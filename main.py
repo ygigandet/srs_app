@@ -24,14 +24,6 @@ if "exercises_sql_tables.duckdb" not in os.listdir("data"):
 # ------------------------------------------------------------
 # FUNCTIONS
 # ------------------------------------------------------------
-def reset_query():
-    """
-
-    :return:
-    """
-    st.session_state.query = ""
-
-
 def execute_user_query(user_query: str) -> None:
     """
     Execute a user-provided SQL query and display the result in Streamlit.
@@ -99,11 +91,7 @@ with st.sidebar:
         st.stop()
 
     selected_theme = st.selectbox(
-        "Select theme:",
-        available_theme,
-        index=None,
-        placeholder="Select theme",
-        on_change=reset_query,
+        "Select theme:", available_theme, index=None, placeholder="Select theme"
     )
 
     if selected_theme is None:
@@ -116,9 +104,7 @@ with st.sidebar:
         st.stop()
 
     exercise_name_selected = st.selectbox(
-        "Select exercise:",
-        exercise_selected["exercise_name"].tolist(),
-        on_change=reset_query,
+        "Select exercise:", exercise_selected["exercise_name"].tolist()
     )
 
     # Access current exercise safely
@@ -133,7 +119,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solu
 # TAB 1: EXERCISE
 # ------------------
 with tab1:
-    query = st.text_area("Write your query here", key="query")
+    query = st.text_area("Write your query here")
     execute_user_query(query)
     exercise_answer = current_exercise["answer"]
     with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:

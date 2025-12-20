@@ -1,1 +1,0 @@
-Instructions: Cross join using the tables <sizes> and <trademarks>, order by trademarks.
