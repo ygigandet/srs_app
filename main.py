@@ -105,7 +105,9 @@ def display_available_theme(user_id):
     df = con.execute(
         """
         SELECT DISTINCT e.theme
-        FROM exercises e
+        FROM exercises 
+        
+        e
         JOIN user_progress up
         ON e.exercise_name = up.exercise_name
         WHERE up.user_id = ?
