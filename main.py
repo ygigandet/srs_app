@@ -85,6 +85,11 @@ def reset_query():
 
 def execute_user_query(user_query: str) -> None:
     """
+    st.session_state.query = ""
+
+
+def execute_user_query(user_query: str) -> None:
+    """
     Execution of the query
     :param user_query:
     :return:
@@ -116,14 +121,27 @@ def display_available_theme(user_id):
     # Convert last_reviewed to Python date
     df["last_reviewed"] = pd.to_datetime(df["last_reviewed"]).dt.date
 
-    # Filter for exercises that are due today or earlier
-    available_df = df[df["last_reviewed"] <= date.today()]
+def display_available_exercise(selected_theme_user: str):
+    """
+    Load and return available exercises from the memory_state table according to the theme
+    """
+    query_f = f"SELECT * FROM memory_state WHERE theme = '{selected_theme_user}'"
+    exercises_df = con.execute(query_f).df()
+    exercises_df["last_reviewed"] = pd.to_datetime(
+        exercises_df["last_reviewed"]
+    ).dt.date
+    exercises_filtered = (
+        exercises_df[exercises_df["last_reviewed"] <= date.today()]
+        .sort_values("last_reviewed")
+        .reset_index(drop=True)
+    )
+    return exercises_filtered
 
-    # Return unique themes
-    return available_df["theme"].unique()
 
-
-def display_available_exercise(user_id, selected_theme_user):
+# ------------------------------------------------------------
+# STREAMLIT
+# ------------------------------------------------------------
+st.write(
     """
     Load exercises for the user in the selected theme that are due today or earlier.
     """
@@ -173,6 +191,7 @@ with st.sidebar:
         placeholder="Select theme",
         on_change=reset_query,
     )
+
     if selected_theme is None:
         st.info("Please select a theme to see available exercises.")
         st.stop()
@@ -187,6 +206,8 @@ with st.sidebar:
         exercise_selected["exercise_name"].tolist(),
         on_change=reset_query,
     )
+
+    # Access current exercise safely
     current_exercise = exercise_selected[
         exercise_selected["exercise_name"] == exercise_name_selected
     ].iloc[0]
