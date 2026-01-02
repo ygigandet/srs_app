@@ -104,23 +104,17 @@ def display_available_theme(user_id):
     """
     df = con.execute(
         """
-        SELECT e.theme, up.last_reviewed
+        SELECT DISTINCT e.theme
         FROM exercises e
         JOIN user_progress up
         ON e.exercise_name = up.exercise_name
         WHERE up.user_id = ?
+        AND up.last_reviewed <= ?
     """,
-        (user_id,),
+        (user_id, date.today()),
     ).df()
 
-    # Convert last_reviewed to Python date
-    df["last_reviewed"] = pd.to_datetime(df["last_reviewed"]).dt.date
-
-    # Filter for exercises that are due today or earlier
-    available_df = df[df["last_reviewed"] <= date.today()]
-
-    # Return unique themes
-    return available_df["theme"].unique()
+    return df["theme"].tolist()
 
 
 def display_available_exercise(user_id, selected_theme_user):
