@@ -183,7 +183,7 @@ with st.sidebar:
     ].iloc[0]
 
 # Tabs
-tab1, tab2, tab3, tab4 = st.tabs(["Exercise", "Tables", "Expected result", "Solution"])
+tab1, tab2, tab3, tab4 = st.tabs(["Query", "Exercise", "Expected result", "Solution"])
 
 # ------------------
 # TAB 1: EXERCISE
