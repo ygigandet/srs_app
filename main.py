@@ -80,6 +80,7 @@ if "last_correct" not in st.session_state:
 if "exercise_completed_srs" not in st.session_state:
     st.session_state.exercise_completed_srs = False
 
+
 # ------------------------------------------------------------
 # FUNCTIONS
 # ------------------------------------------------------------
