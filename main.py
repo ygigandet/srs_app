@@ -5,7 +5,6 @@ import os
 from datetime import date, timedelta
 
 import duckdb
-import pandas as pd
 import streamlit as st
 
 
