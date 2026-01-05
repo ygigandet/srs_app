@@ -152,7 +152,7 @@ def display_available_exercise(user_id, selected_theme_user):
 # STREAMLIT UI
 # ------------------------------------------------------------
 st.title("SRS - Space Repetition System")
-st.write("Application for reviewing programming languages")
+st.write("Application for reviewing SQL")
 
 # Sidebar
 with st.sidebar:
