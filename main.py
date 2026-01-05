@@ -29,7 +29,6 @@ def get_user_id():
 
 
 USER_ID = get_user_id()
-st.write(f"Logged in as: {USER_ID}")
 
 # ------------------------------------------------------------
 # INITIALIZE DATA FOLDER AND DATABASE
@@ -156,6 +155,7 @@ st.write("Application for reviewing programming languages")
 
 # Sidebar
 with st.sidebar:
+    st.write(f"Logged in as: {USER_ID}")
     available_theme = display_available_theme(USER_ID)
     if len(available_theme) == 0:
         st.warning("No themes are available for review today.")
