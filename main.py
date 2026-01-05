@@ -70,6 +70,13 @@ def init_user_progress(user_id):
 
 init_user_progress(USER_ID)
 
+# ------------------------------------------------------------
+# SESSION STATE FLAGS
+# ------------------------------------------------------------
+
+if "last_correct" not in st.session_state:
+    st.session_state.last_correct = False
+
 
 # ------------------------------------------------------------
 # FUNCTIONS
@@ -80,6 +87,7 @@ def reset_query():
     :return:
     """
     st.session_state.query = ""
+    st.session_state.last_correct = False
 
 
 def execute_user_query(user_query: str) -> None:
@@ -186,9 +194,11 @@ with tab1:
     exercise_answer = current_exercise["answer"]
     with open(f"answers/{exercise_answer}", "r", encoding="utf-8") as f:
         answer = f.read()
-    if query == answer:
+    is_correct = query == answer
+    if is_correct and not st.session_state.last_correct:
         st.write("Yes, that's it!")
         st.balloons()
+    st.session_state.last_correct = is_correct
 
     cols = st.columns(3)
     for col, n_days in zip(cols, [2, 7, 21]):
