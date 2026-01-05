@@ -1,12 +1,19 @@
-# srs_app
-
 ![Work in Progress](https://img.shields.io/badge/status-in%20progress-yellow?style=for-the-badge)
-
-A **SRS (Spaced Repetition System)** application to help you memorise key elements of programming languages.  
 
 ## 📄 Overview
 
-`srs_app` is a simple command-line/interactive tool written in Python that allows you to create, store, and review “flashcards” (questions/answers) so that you can memorise syntax or concepts of programming languages (or anything else). It uses spaced-repetition principles to schedule reviews for optimal long-term retention.
+srs_app is a Spaced Repetition System (SRS) application designed to help users **learn and maintain** SQL language skills over time.
+
+It is built in Python and deployed as a Streamlit web application, making it easy to use directly from the browser—no installation required.
+
+## 🚀 How It Works
+
+1. Click on the Streamlit button below to launch the application
+2. Enter a username when prompted (it is used to track your personal review history).
+3. Review SQL questions that are due based on the spaced-repetition schedule. (Use the buttons to indicate when you want to review it)
+
+Each user’s progress is stored so they can return later and continue reviewing questions exactly when they are due.
+ns exactly when they are due.
 
 Deployed on Streamlit: 
 
