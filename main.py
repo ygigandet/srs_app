@@ -77,6 +77,9 @@ init_user_progress(USER_ID)
 if "last_correct" not in st.session_state:
     st.session_state.last_correct = False
 
+if "exercise_completed_srs" not in st.session_state:
+    st.session_state.exercise_completed_srs = False
+
 
 # ------------------------------------------------------------
 # FUNCTIONS
@@ -88,6 +91,7 @@ def reset_query():
     """
     st.session_state.query = ""
     st.session_state.last_correct = False
+    st.session_state.exercise_completed_srs = False
 
 
 def execute_user_query(user_query: str) -> None:
@@ -189,6 +193,13 @@ tab1, tab2, tab3, tab4 = st.tabs(["Query", "Exercise", "Expected result", "Solut
 # TAB 1: EXERCISE
 # ------------------
 with tab1:
+    if st.session_state.exercise_completed_srs:
+        st.session_state.query = ""
+        st.session_state.last_correct = False
+
+        st.success("Exercise reviewed: please select another one")
+        st.stop()
+
     query = st.text_area("Write your query here", key="query")
     execute_user_query(query)
     exercise_answer = current_exercise["answer"]
@@ -214,6 +225,9 @@ with tab1:
                 """,
                     (next_review, USER_ID, exercise_name_selected),
                 )
+
+                st.session_state.exercise_completed_srs = True
+                st.rerun()
 
 # ------------------
 # TAB 2: INSTRUCTIONS AND TABLES
