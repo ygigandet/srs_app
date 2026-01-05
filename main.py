@@ -192,6 +192,13 @@ tab1, tab2, tab3, tab4 = st.tabs(["Query", "Exercise", "Expected result", "Solut
 # TAB 1: EXERCISE
 # ------------------
 with tab1:
+    if st.session_state.exercise_completed_srs:
+        st.session_state.query = ""
+        st.session_state.last_correct = False
+
+        st.success("Exercise reviewed: please select another one")
+        st.stop()
+
     query = st.text_area("Write your query here", key="query")
     execute_user_query(query)
     exercise_answer = current_exercise["answer"]
