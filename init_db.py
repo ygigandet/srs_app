@@ -60,11 +60,12 @@ exercises_df = pd.DataFrame(data)
 con.execute(
     """
 CREATE TABLE IF NOT EXISTS exercises (
-    exercise_name TEXT PRIMARY KEY,
     theme TEXT,
+    exercise_name TEXT,
     tables TEXT[],
     instructions TEXT,
-    answer TEXT
+    answer TEXT,
+    PRIMARY KEY (theme, exercise_name)
 )
 """
 )
