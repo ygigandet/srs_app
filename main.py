@@ -113,7 +113,7 @@ def display_available_theme(user_id):
         (user_id, date.today()),
     ).df()
 
-    return df
+    return df["theme"].unique()
 
 
 def display_available_exercise(user_id, selected_theme_user):
