@@ -25,7 +25,7 @@ data = {
         "sizes_trademarks",
         "orders_details",
         "customers_orders",
-        "orders_details",
+        "orders_details_ij",
         "salaries_seniority",
     ],
     "tables": [
