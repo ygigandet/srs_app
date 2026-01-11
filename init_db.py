@@ -19,6 +19,7 @@ data = {
         "left_join",
         "inner_join",
         "inner_join",
+        "full_outer_join"
     ],
     "exercise_name": [
         "beverages_and_food",
@@ -27,6 +28,7 @@ data = {
         "customers_orders",
         "orders_details_ij",
         "salaries_seniority",
+        "stores_products_details",
     ],
     "tables": [
         ["beverages", "food_items"],
@@ -35,6 +37,7 @@ data = {
         ["orders", "customers", "products", "details"],
         ["orders", "customers", "products", "details"],
         ["salaries", "seniority"],
+        ["customers_stores_products", "products_fo"],
     ],
     "instructions": [
         "beverages_and_food.txt",
@@ -43,6 +46,7 @@ data = {
         "customers_orders.txt",
         "orders_details_ij.txt",
         "salary_seniority.txt",
+        "stores_products_details.txt",
     ],
     "answer": [
         "beverages_and_food.sql",
@@ -51,6 +55,7 @@ data = {
         "customers_orders.sql",
         "orders_details_ij.sql",
         "salary_seniority.sql",
+        "stores_products_details.sql",
     ],
 }
 
@@ -180,5 +185,37 @@ SENIORITY_CSV = """employee_id,seniority
 """
 seniority = pd.read_csv(io.StringIO(SENIORITY_CSV))
 con.execute("CREATE TABLE IF NOT EXISTS seniority AS SELECT * FROM seniority")
+
+# FULL OUTER JOIN exercises
+CUSTOMERS_STORES_PRODUCTS_DATA_DF = {
+    "customer_id": [11, 11, 11, 12, 12, 13, 14, 15],
+    "customer_name": [
+        "Zeinaba",
+        "Zeinaba",
+        "Zeinaba",
+        "Tancrède",
+        "Tancrède",
+        "Israel",
+        "Kaouter",
+        "Alan",
+    ],
+    "store_id": [1, 1, 1, 2, 2, 3, None, 4],
+    "product_id": [101, 103, 105, 101, 103, 104, None, 105],
+}
+
+customers_stores_products_fo = pd.DataFrame(CUSTOMERS_STORES_PRODUCTS_DATA_DF)
+con.execute(
+    "CREATE TABLE IF NOT EXISTS customers_stores_products AS "
+    "SELECT * FROM customers_stores_products_fo"
+)
+
+PRODUCTS_DATA_DF = {
+    "product_id": [100, 101, 103, 104],
+    "product_name": ["Cherry coke", "Laptop", "Ipad", "Livre"],
+    "product_price": [3, 800, 400, 30],
+}
+
+products_fo = pd.DataFrame(PRODUCTS_DATA_DF)
+con.execute("CREATE TABLE IF NOT EXISTS products_fo AS SELECT * FROM products_fo")
 
 con.close()
