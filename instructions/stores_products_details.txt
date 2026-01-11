@@ -1,0 +1,2 @@
+Outer join using the tables <customers_stores_products> and <products_fo>.
+Hint: using()
