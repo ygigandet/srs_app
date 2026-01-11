@@ -19,7 +19,8 @@ data = {
         "left_join",
         "inner_join",
         "inner_join",
-        "full_outer_join"
+        "full_outer_join",
+        "self_join",
     ],
     "exercise_name": [
         "beverages_and_food",
@@ -29,6 +30,7 @@ data = {
         "orders_details_ij",
         "salaries_seniority",
         "stores_products_details",
+        "employees_managers",
     ],
     "tables": [
         ["beverages", "food_items"],
@@ -38,6 +40,7 @@ data = {
         ["orders", "customers", "products", "details"],
         ["salaries", "seniority"],
         ["customers_stores_products", "products_fo"],
+        ["employees"],
     ],
     "instructions": [
         "beverages_and_food.txt",
@@ -47,6 +50,7 @@ data = {
         "orders_details_ij.txt",
         "salary_seniority.txt",
         "stores_products_details.txt",
+        "employees_managers.txt",
     ],
     "answer": [
         "beverages_and_food.sql",
@@ -56,6 +60,7 @@ data = {
         "orders_details_ij.sql",
         "salary_seniority.sql",
         "stores_products_details.sql",
+        "employees_managers.sql",
     ],
 }
 
@@ -217,5 +222,15 @@ PRODUCTS_DATA_DF = {
 
 products_fo = pd.DataFrame(PRODUCTS_DATA_DF)
 con.execute("CREATE TABLE IF NOT EXISTS products_fo AS SELECT * FROM products_fo")
+
+# SELF JOIN exercise
+EMPLOYEES_DF = {
+    'employee_id': [11, 12, 13, 14, 15],
+    'employee_name': ["Sophie", "Sylvie", "Daniel", "Kaouter", "David"],
+    'manager_id': [13, None, 12, 13, 11],
+}
+
+employees = pd.DataFrame(EMPLOYEES_DF)
+con.execute("CREATE TABLE IF NOT EXISTS employees AS SELECT * FROM employees")
 
 con.close()
